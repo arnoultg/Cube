@@ -15,8 +15,10 @@ def print_square(square):
     for i in range(0, len(square)):
         for j in range(0, len(square[i])):
             if square[i][j] == "0":
+                square[i][j] = "X"
                 print(" X ", end="")
             else:
+                square[i][j] = "."
                 print(" . ", end="")
         print()
 
@@ -24,27 +26,39 @@ def print_square(square):
 
 
 def filling(square):
-    for x in range(0, len(square)):
-        for y in range(0,len(square[i])):
-            if square[x][y] == "0":
+    nb_y = neighourg_y(3,0,square,0)
+    nb_x = neighourg_x(3,0,square,0)
+
+
+    print(nb_y,nb_x)
+    # for y in range(0, len(square)):
+    #     for x in range(0,len(square[y])):
+    #         if square[y][x] == "0":
+    #             nbx,nby = neighourg(x,y,square,0,0)
+    #             #print(nbx,nby)
                 
 
-def neighourg(x,y,square):
-    if square[x][y] == "0":
-        if square[x+1][y] == "0":
-            neighourg(x+1,y,square)
-        else:
-            if square[x][y+1] == "0":
-                
+def neighourg_x(x,y,square,nb_x):
+    if square[y][x] == "X" :
+        if x <= len(square):
+            if square[y][x+1] == "X":
+                nb_x = neighourg_x(x+1,y,square,nb_x+1)
+    return nb_x
 
 
-            
+def neighourg_y(x,y,square,nb_y):
+    if square[y][x] == "X" :
+        if y <= len(square):
+            if square[y+1][x] == "X":
+                nb_y = neighourg_y(x,y+1,square,nb_y+1)
+    return nb_y
 
 
 
 def main():
     square = init("s1.txt")
     print_square(square)
+    filling(square)
 main()
     
 
