@@ -20,10 +20,31 @@ def print_square(square):
                 print(" . ", end="")
         print()
 
+
+
+
+def filling(square):
+    for x in range(0, len(square)):
+        for y in range(0,len(square[i])):
+            if square[x][y] == "0":
+                
+
+def neighourg(x,y,square):
+    if square[x][y] == "0":
+        if square[x+1][y] == "0":
+            neighourg(x+1,y,square)
+        else:
+            if square[x][y+1] == "0":
+                
+
+
+            
+
+
+
 def main():
     square = init("s1.txt")
     print_square(square)
-
 main()
     
 
