@@ -31,7 +31,7 @@ def print_matrice_base(matrice_base):
 
 
 def filling(matrice_base,nb_square):
-    # x_test = 0
+    # x_test = 3
     # y_test = 0
     # nb_y = neighourg_y(x_test,y_test,matrice_base,0)
     # nb_x = neighourg_x(x_test,y_test,matrice_base,0)
@@ -53,7 +53,6 @@ def filling(matrice_base,nb_square):
             nb_y = neighourg_y(x,y,matrice_base,0)
             nb_x = neighourg_x(x,y,matrice_base,0)
             larg_square = min(nb_x,nb_y)+1
-            #print(larg_square)
             matrice_min = []
             for i in range(0, larg_square):
                 matrice_min.append(matrice_base[y+i][x:larg_square+x])
@@ -67,13 +66,18 @@ def filling(matrice_base,nb_square):
                 
 
 def matrice_true(matrice_min):
+    break_point = []
     larg = len(matrice_min)
     for i in range(0,len(matrice_min)):
         for j in range (0,len(matrice_min[i])):
             if matrice_min[i][j] != "XXX":
-                print("i,j",i,j)
-                print("matrice_min",matrice_min[i][j])
-                larg=min(i,j,larg)
+                break_point.append([i,j])
+    
+    for i in range(0,len(break_point)):
+        break_point[i] = max(break_point[i])
+    
+    for i in range(0,len(break_point)):
+        larg = min(break_point[i],larg)
     return(larg)
 
 
@@ -102,7 +106,7 @@ def count(matrice_base):
     return(len(np.unique(liste_square))-1)
 
 def main():
-    matrice_base = init("s7.txt")
+    matrice_base = init("s2.txt")
     print_matrice_base(matrice_base)
     nb_square = 100
     filling(matrice_base,nb_square)
