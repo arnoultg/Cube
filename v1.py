@@ -27,10 +27,26 @@ def print_matrice_base(matrice_base):
                 print("",matrice_base[i][j],"", end="")
         print()
 
+def test_all(matrice_base):
+    mini_square = 1000000000
+    matrice_mini = []
+    #matrice_mini = filling(matrice_base,2,9)
+    for i in range(0, len(matrice_base)):
+        for j in range(0,len(matrice_base[i])):
+            matrice_base = filling(matrice_base,j,i)
+
+            if mini_square > count(matrice_base):
+                mini_square = count(matrice_base)
+                matrice_mini = matrice_base
+                print()
+                print_matrice_base(matrice_base)
+                print("Nombre de carré : ",count(matrice_base))
+            matrice_base = init()
 
 
+    return matrice_mini
 
-def filling(matrice_base,nb_square):
+def filling(matrice_base,x_base,y_base):
     # x_test = 1
     # y_test = 0
     # nb_y = neighourg_y(x_test,y_test,matrice_base,0)
@@ -46,34 +62,34 @@ def filling(matrice_base,nb_square):
     #     for j in range(0, taille_mat):
     #         matrice_base[y_test+i][x_test+j] = nb_square
     # nb_square += 1
-    mini_square = 1000000000
-    matrice_mini = []
-    for i in range(0, len(matrice_base)):
-        for j in range(0,len(matrice_base[i])):
-            for y in range(0, len(matrice_base)):
-                for x in range(0,len(matrice_base[y])):
-                    nb_y = neighourg_y((x+j)%len(matrice_base[y]),(y+i)%len(matrice_base),matrice_base,0)
-                    nb_x = neighourg_x((x+j)%len(matrice_base[y]),(y+i)%len(matrice_base),matrice_base,0)
-                    larg_square = min(nb_x,nb_y)+1
-                    matrice_min = []
-                    for k in range(0, larg_square):
-                        matrice_min.append(matrice_base[(y+i)%len(matrice_base)+k][(x+j)%len(matrice_base[y]):larg_square+(x+j)%len(matrice_base[y])])
-                    taille_mat = matrice_true(matrice_min)
-                    for k in range(0, taille_mat):
-                        for p in range(0, taille_mat):
-                            matrice_base[(y+i)%len(matrice_base)+k][(x+j)%len(matrice_base[y])+p] = nb_square
-                    nb_square += 1
+    nb_square = 100
+    for x in range(0,len(matrice_base[y_base])-x_base):
+            nb_y = neighourg_y((x+x_base),(y_base),matrice_base,0)
+            nb_x = neighourg_x((x+x_base),(y_base),matrice_base,0)
+            larg_square = min(nb_x,nb_y)+1
+            matrice_min = []
+            for k in range(0, larg_square):
+                matrice_min.append(matrice_base[(y_base)+k][(x+x_base):larg_square+(x+x_base)])
+            taille_mat = matrice_true(matrice_min)
+            for k in range(0, taille_mat):
+                for p in range(0, taille_mat):
+                    matrice_base[(y_base)+k][(x+x_base)+p] = nb_square
+            nb_square += 1
 
-            if mini_square > count(matrice_base):
-                mini_square = count(matrice_base)
-                matrice_mini = matrice_base
-                print()
-                print_matrice_base(matrice_base)
-                print("Nombre de carré : ",count(matrice_base))
-            matrice_base = init()
-            nb_square = 100
-        
-    return matrice_mini
+    for y in range(0, len(matrice_base)):
+        for x in range(0,len(matrice_base[y])):
+            nb_y = neighourg_y(x,(y+y_base)%len(matrice_base),matrice_base,0)
+            nb_x = neighourg_x(x,(y+y_base)%len(matrice_base),matrice_base,0)
+            larg_square = min(nb_x,nb_y)+1
+            matrice_min = []
+            for k in range(0, larg_square):
+                matrice_min.append(matrice_base[(y+y_base)%len(matrice_base)+k][x:larg_square+x])
+            taille_mat = matrice_true(matrice_min)
+            for k in range(0, taille_mat):
+                for p in range(0, taille_mat):
+                    matrice_base[(y+y_base)%len(matrice_base)+k][x+p] = nb_square
+            nb_square += 1
+    return matrice_base
             
                 
 
@@ -117,7 +133,7 @@ def main():
     matrice_base = init()
     print_matrice_base(matrice_base)
     nb_square = 100
-    matrice_final = filling(matrice_base,nb_square)
+    matrice_final = test_all(matrice_base)
     print()
     print_matrice_base(matrice_final)
     print("Nombre de carré : ",count(matrice_final))
