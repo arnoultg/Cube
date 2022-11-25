@@ -1,7 +1,7 @@
 import numpy as np
 
-def init(path_file):
-    f = open(path_file, "r")
+def init():
+    f = open("s2.txt", "r")
     width = int(f.readline())
     hight = int(f.readline())
     base = f.readline()
@@ -31,7 +31,7 @@ def print_matrice_base(matrice_base):
 
 
 def filling(matrice_base,nb_square):
-    # x_test = 3
+    # x_test = 1
     # y_test = 0
     # nb_y = neighourg_y(x_test,y_test,matrice_base,0)
     # nb_x = neighourg_x(x_test,y_test,matrice_base,0)
@@ -46,22 +46,34 @@ def filling(matrice_base,nb_square):
     #     for j in range(0, taille_mat):
     #         matrice_base[y_test+i][x_test+j] = nb_square
     # nb_square += 1
+    mini_square = 1000000000
+    matrice_mini = []
+    for i in range(0, len(matrice_base)):
+        for j in range(0,len(matrice_base[i])):
+            for y in range(0, len(matrice_base)):
+                for x in range(0,len(matrice_base[y])):
+                    nb_y = neighourg_y((x+j)%len(matrice_base[y]),(y+i)%len(matrice_base),matrice_base,0)
+                    nb_x = neighourg_x((x+j)%len(matrice_base[y]),(y+i)%len(matrice_base),matrice_base,0)
+                    larg_square = min(nb_x,nb_y)+1
+                    matrice_min = []
+                    for k in range(0, larg_square):
+                        matrice_min.append(matrice_base[(y+i)%len(matrice_base)+k][(x+j)%len(matrice_base[y]):larg_square+(x+j)%len(matrice_base[y])])
+                    taille_mat = matrice_true(matrice_min)
+                    for k in range(0, taille_mat):
+                        for p in range(0, taille_mat):
+                            matrice_base[(y+i)%len(matrice_base)+k][(x+j)%len(matrice_base[y])+p] = nb_square
+                    nb_square += 1
 
-
-    for y in range(0, len(matrice_base)):
-        for x in range(0,len(matrice_base[y])):
-            nb_y = neighourg_y(x,y,matrice_base,0)
-            nb_x = neighourg_x(x,y,matrice_base,0)
-            larg_square = min(nb_x,nb_y)+1
-            matrice_min = []
-            for i in range(0, larg_square):
-                matrice_min.append(matrice_base[y+i][x:larg_square+x])
-            taille_mat = matrice_true(matrice_min)
-            for i in range(0, taille_mat):
-                for j in range(0, taille_mat):
-                    matrice_base[y+i][x+j] = nb_square
-            nb_square += 1
+            if mini_square > count(matrice_base):
+                mini_square = count(matrice_base)
+                matrice_mini = matrice_base
+                print()
+                print_matrice_base(matrice_base)
+                print("Nombre de carré : ",count(matrice_base))
+            matrice_base = init()
+            nb_square = 100
         
+    return matrice_mini
             
                 
 
@@ -79,9 +91,6 @@ def matrice_true(matrice_min):
     for i in range(0,len(break_point)):
         larg = min(break_point[i],larg)
     return(larg)
-
-
-
 def neighourg_x(x,y,matrice_base,nb_x):
     if matrice_base[y][x] == "XXX" :
         if x < len(matrice_base[y])-1:
@@ -98,7 +107,6 @@ def neighourg_y(x,y,matrice_base,nb_y):
     return nb_y
 
 def count(matrice_base):
-    nb_square = 0
     liste_square = []
     for i in range(0, len(matrice_base)):
         liste_square +=matrice_base[i]
@@ -106,13 +114,15 @@ def count(matrice_base):
     return(len(np.unique(liste_square))-1)
 
 def main():
-    matrice_base = init("s2.txt")
+    matrice_base = init()
     print_matrice_base(matrice_base)
     nb_square = 100
-    filling(matrice_base,nb_square)
+    matrice_final = filling(matrice_base,nb_square)
     print()
-    print_matrice_base(matrice_base)
-    print("Nombre de carré : ",count(matrice_base))
+    print_matrice_base(matrice_final)
+    print("Nombre de carré : ",count(matrice_final))
+    
+
 main()
     
 
