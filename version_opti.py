@@ -1,39 +1,66 @@
+import datetime
 import numpy as np
 
+#Fonction recursive qui fait tout
+def TestValidationCarre(pos, visited, actual_square, min_square, square):
+    global hauteur, largeur, square_answer
+    if actual_square >= min_square:
+        # On resort ca n'as pas de sens de continue
+        return min_square
+    if pos[0] > hauteur - 1:
+        # On sort de la grille, donc on renvoie la valeur du point actuel
+        square_answer = square
+        return actual_square
 
-# Fonction qui compte le nombre de carré dans la matrice
-#1 20
-#2 29
-#3 40
-#4 49
-#5 55
+    #Décalage sur la grille
+    new_pos = pos.copy()
+    if new_pos[1] + 1 >= largeur:
+        new_pos[0] += 1
+        new_pos[1] = 0
+    else:
+        new_pos[1] += 1
+    # Si on tombe sur un point de la matrice pleine
+    if grid[pos[0]][pos[1]] == "1":
+        # on relance la fonction
+        return TestValidationCarre(new_pos, visited, actual_square, min_square, square)
 
-def init():
-    f = open("s2.txt", "r")
-    width = int(f.readline())
-    hight = int(f.readline())
-    base = f.readline()
-    matrice_base = []
-    for i in range(0, hight):
-        ligne = base[width*i:width*(i+1)] # On découpe la ligne en fonction de la largeur
-        ligne = list(ligne) # On transforme la ligne en liste
-        matrice_base.append(ligne)
-    
-    for i in range(0, len(matrice_base)):
-        for j in range(0, len(matrice_base[i])):
-            if matrice_base[i][j] == "0":
-                matrice_base[i][j] = "XXX"
-            else:
-                matrice_base[i][j] = "###"
+    if pos not in visited:
+        # Si la possition dans la matrice est déja visited, on test :
+        i = pos[0]
+        j = pos[1]
+        long = 0
+        long = min(largeur - j - 1, hauteur - i - 1)
+        while long != -1:
+            tmp_visit = []
+            is_square = True
+            for h in range(i, i + long + 1):
+                for w in range(j, j + long + 1):
+                    # Si le point n'est pas visité, et qu'il n'est pas visité et = a 1 alors on dis que le carré est visité
+                    if grid[h][w] != "1" and [h, w] not in visited:
+                        tmp_visit += [[h, w]]
+                    else:
+                        #le carré n'est pas un carré et on break ( trouvé un point de matrice non ecrivable), donc on break le for
+                        is_square = False
+                        break
 
-    return matrice_base
+            if is_square:
+                #Si le carré est valide, on relance pour généré un carré plus petit
+                min_square = TestValidationCarre(new_pos, visited + tmp_visit[1:], actual_square + 1, min_square, square + [tmp_visit])
+            long -= 1
 
+
+    else:
+        # sinon on relance avec un carré plus petit
+        min_square = TestValidationCarre(new_pos, visited, actual_square, min_square, square)
+
+    # On retourne la valeur du carré optimun trouvé
+    return min_square
 
 def print_matrice_base(matrice_base):
-    for i in range(0, len(matrice_base)):
-        for j in range(0, len(matrice_base[i])):
-                print("",matrice_base[i][j],"", end="")
-        print()
+    for i in matrice_base:
+        for j in i:
+                print("{:^3}".format(j), end="")
+        print("\n")
 
 def opti(matrice_base):
     mini_square = 1000000000
@@ -47,11 +74,11 @@ def opti(matrice_base):
             if mini_square > count(matrice_base):
                 mini_square = count(matrice_base)
                 matrice_mini = matrice_base
-                print()
-                print_matrice_base(matrice_base)
-                print("Nombre de carré : ",count(matrice_base))
+                # print()
+                # print_matrice_base(matrice_base)
+                # print("Nombre de carré : ",count(matrice_base))
             nb_square = 100
-            matrice_base = init()
+            matrice_base, largeur, hauteur = init()
     
     for i in range(0, len(matrice_base)):
         for j in range(0,len(matrice_base[i])):
@@ -60,12 +87,11 @@ def opti(matrice_base):
             if mini_square > count(matrice_base):
                 mini_square = count(matrice_base)
                 matrice_mini = matrice_base
-                print()
-                print_matrice_base(matrice_base)
-                print("Nombre de carré : ",count(matrice_base))
+                # print()
+                # print_matrice_base(matrice_base)
+                # print("Nombre de carré : ",count(matrice_base))
             nb_square = 100
-            matrice_base = init()
-
+            matrice_base, largeur, hauteur = init()
     for i in reversed(range(0, len(matrice_base))):
         for j in reversed(range(0,len(matrice_base[i]))):
             matrice_base,nb_square = filling_first_line(matrice_base,j,i,nb_square)
@@ -139,6 +165,7 @@ def filling_first_line(matrice_base,x_base,y_base,nb_square):
 
 def filling(matrice_base,x_base,y_base,nb_square):
     for y in range(0, len(matrice_base)):
+        print(matrice_base[y])
         for x in range(0,len(matrice_base[y])):
             nb_y = neighourg_y(x,(y+y_base)%len(matrice_base),matrice_base,0)
             nb_x = neighourg_x(x,(y+y_base)%len(matrice_base),matrice_base,0)
@@ -160,7 +187,7 @@ def matrice_true(matrice_min):
     larg = len(matrice_min)
     for i in range(0,len(matrice_min)):
         for j in range (0,len(matrice_min[i])):
-            if matrice_min[i][j] != "XXX":
+            if matrice_min[i][j] != "0":
                 break_point.append([i,j])
     
     for i in range(0,len(break_point)):
@@ -170,17 +197,17 @@ def matrice_true(matrice_min):
         larg = min(break_point[i],larg)
     return(larg)
 def neighourg_x(x,y,matrice_base,nb_x):
-    if matrice_base[y][x] == "XXX" :
+    if matrice_base[y][x] == "0" :
         if x < len(matrice_base[y])-1:
-            if matrice_base[y][x+1] == "XXX":
+            if matrice_base[y][x+1] == "0":
                 nb_x = neighourg_x(x+1,y,matrice_base,nb_x+1)
     return nb_x
 
 
 def neighourg_y(x,y,matrice_base,nb_y):
-    if matrice_base[y][x] == "XXX" :
+    if matrice_base[y][x] == "0" :
         if y < len(matrice_base)-1:
-            if matrice_base[y+1][x] == "XXX":
+            if matrice_base[y+1][x] == "0":
                 nb_y = neighourg_y(x,y+1,matrice_base,nb_y+1)
     return nb_y
 
@@ -191,21 +218,53 @@ def count(matrice_base):
 
     return(len(np.unique(liste_square))-1)
 
+def init():
+    #On import le Fichier initial :
+    f = open("s2.txt", "r")
 
-            
+    #On créé les var hauteur et largeur :
+    largeur = int(f.readline())
+    hauteur = int(f.readline())
+    print("largeur:", largeur)
+    print("hauteur:", hauteur)
+
+    #On créé les matrices afin de travailler dessus
+    ligne = f.readline()
+    grid = []
+
+    for i in range(hauteur):
+        grid.append([j for j in ligne[i * largeur:i * largeur + largeur]])
     
+    return grid, largeur, hauteur
 
 
-def main():
-    matrice_base = init()
-    print_matrice_base(matrice_base)
-    nb_square = 100
-    matrice_final = opti(matrice_base)
-    print()
-    print_matrice_base(matrice_final)
-    print("Nombre de carré : ",count(matrice_final))
-    
+first_time = datetime.datetime.now()
+grid, largeur, hauteur = init()
+matrice_final = opti(grid)
+print_matrice_base(matrice_final)
+print("Nombre de carré : ",count(matrice_final))
+square_answer = []
+# on génére le temps nécéssaire pour le calcul
 
-main()
-    
+result_square = TestValidationCarre([0, 0], [], 0, largeur * hauteur, [])
+print("Min Square:", result_square)
+second_time = datetime.datetime.now()
+print("Seconds:", second_time - first_time)
+cpt = 0
+# on Remplace les points de la matrice par 1 ou . selon si il sont égaux a 1 ou 0
+for i in range(len(grid)):
+    for j in range(len(grid[0])):
+        if grid[i][j] == "1":
+            grid[i][j] = "."
+
+# On compte le nombre de carré pour remplir la matrice
+for i in square_answer:
+    for j in i:
+        grid[j[0]][j[1]] = cpt
+    cpt += 1
+
+
+# On affiche la grille complete
+print_matrice_base(grid)
+
 
