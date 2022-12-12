@@ -7,9 +7,12 @@ def TestValidationCarre(pos, visited, actual_square, min_square, square):
     if actual_square >= min_square:
         # On resort ca n'as pas de sens de continue
         return min_square
+
     if pos[0] > hauteur - 1:
         # On sort de la grille, donc on renvoie la valeur du point actuel
         square_answer = square
+        if actual_square < min_square:
+            print(actual_square)
         return actual_square
 
     #Décalage sur la grille
@@ -59,7 +62,7 @@ def TestValidationCarre(pos, visited, actual_square, min_square, square):
 def print_matrice_base(matrice_base):
     for i in matrice_base:
         for j in i:
-                print("{:^3}".format(j), end="")
+                print("{:^4}".format(j), end="")
         print("\n")
 
 def opti(matrice_base):
@@ -104,7 +107,7 @@ def opti(matrice_base):
                 print_matrice_base(matrice_base)
                 print("Nombre de carré : ",count(matrice_base))
             nb_square = 100
-            matrice_base = init()
+            matrice_base, largeur, hauteur = init()
 
     for i in reversed(range(0, len(matrice_base))):
         for j in reversed(range(0,len(matrice_base[i]))):
@@ -117,7 +120,7 @@ def opti(matrice_base):
                 print_matrice_base(matrice_base)
                 print("Nombre de carré : ",count(matrice_base))
             nb_square = 100
-            matrice_base = init()
+            matrice_base, largeur, hauteur = init()
 
     for i in range(0, len(matrice_base[0])):
         for j in range(0,len(matrice_base)):
@@ -131,7 +134,7 @@ def opti(matrice_base):
                 print_matrice_base(matrice_base)
                 print("Nombre de carré : ",count(matrice_base))
             nb_square = 100
-            matrice_base = init()
+            matrice_base, largeur, hauteur = init()
     
     for i in range(0, len(matrice_base[0])):
         for j in range(0,len(matrice_base)):
@@ -144,7 +147,7 @@ def opti(matrice_base):
                 print_matrice_base(matrice_base)
                 print("Nombre de carré : ",count(matrice_base))
             nb_square = 100
-            matrice_base = init()
+            matrice_base, largeur, hauteur = init()
     return matrice_mini
 
 
@@ -165,7 +168,6 @@ def filling_first_line(matrice_base,x_base,y_base,nb_square):
 
 def filling(matrice_base,x_base,y_base,nb_square):
     for y in range(0, len(matrice_base)):
-        print(matrice_base[y])
         for x in range(0,len(matrice_base[y])):
             nb_y = neighourg_y(x,(y+y_base)%len(matrice_base),matrice_base,0)
             nb_x = neighourg_x(x,(y+y_base)%len(matrice_base),matrice_base,0)
@@ -220,13 +222,11 @@ def count(matrice_base):
 
 def init():
     #On import le Fichier initial :
-    f = open("s2.txt", "r")
+    f = open("s5.txt", "r")
 
     #On créé les var hauteur et largeur :
     largeur = int(f.readline())
     hauteur = int(f.readline())
-    print("largeur:", largeur)
-    print("hauteur:", hauteur)
 
     #On créé les matrices afin de travailler dessus
     ligne = f.readline()
@@ -237,16 +237,20 @@ def init():
     
     return grid, largeur, hauteur
 
-
+# on génére le temps nécéssaire pour le calcul
 first_time = datetime.datetime.now()
 grid, largeur, hauteur = init()
+print(largeur,hauteur)
 matrice_final = opti(grid)
-print_matrice_base(matrice_final)
-print("Nombre de carré : ",count(matrice_final))
-square_answer = []
-# on génére le temps nécéssaire pour le calcul
 
-result_square = TestValidationCarre([0, 0], [], 0, largeur * hauteur, [])
+print_matrice_base(matrice_final)
+print("Nombre de carré mini optimisation : ",count(matrice_final))
+print()
+
+min_square_opti = count(matrice_final)
+square_answer = []
+
+result_square = TestValidationCarre([0, 0], [], 0, min_square_opti, [])
 print("Min Square:", result_square)
 second_time = datetime.datetime.now()
 print("Seconds:", second_time - first_time)
