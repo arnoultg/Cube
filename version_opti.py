@@ -1,5 +1,8 @@
 import datetime
 import numpy as np
+import sys
+global file_num
+
 
 #Fonction recursive qui fait tout
 def TestValidationCarre(pos, visited, actual_square, min_square, square):
@@ -59,11 +62,18 @@ def TestValidationCarre(pos, visited, actual_square, min_square, square):
     # On retourne la valeur du carré optimun trouvé
     return min_square
 
+#Fonction pour print la matrice
 def print_matrice_base(matrice_base):
     for i in matrice_base:
         for j in i:
                 print("{:^4}".format(j), end="")
         print("\n")
+
+#######################################################################
+
+#Les fonctions suivantes sont utilisé pour le demarrage et permettent de trouver un minimum deja bas pour raccourcir le temps
+#Nous avons commencé le projet par ca, puis nous rendons compte que cela ne serait pas sufissant pour avoir le minimum nous avons fait de maniere recursif
+
 
 def opti(matrice_base):
     mini_square = 1000000000
@@ -220,9 +230,12 @@ def count(matrice_base):
 
     return(len(np.unique(liste_square))-1)
 
+#################################################################################
+
 def init():
     #On import le Fichier initial :
-    f = open("s5.txt", "r")
+    file="s" + str(file_num) + ".txt"
+    f = open(file, "r")
 
     #On créé les var hauteur et largeur :
     largeur = int(f.readline())
@@ -237,10 +250,22 @@ def init():
     
     return grid, largeur, hauteur
 
+def nbHoles(grid):
+    nbHoles = 0
+    for y in range(0, len(grid)):
+        for x in range(0,len(grid[y])):
+            if grid[y][x] == "1":
+                nbHoles +=1
+    
+    return nbHoles
+
 # on génére le temps nécéssaire pour le calcul
 first_time = datetime.datetime.now()
+
+file_num = sys.argv[1]
 grid, largeur, hauteur = init()
-print(largeur,hauteur)
+print(" Hauteur = ",hauteur," Largeur = ", largeur, )
+print("Nb holes = ", nbHoles(grid))
 matrice_final = opti(grid)
 
 print_matrice_base(matrice_final)
